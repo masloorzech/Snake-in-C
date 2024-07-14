@@ -9,6 +9,11 @@ struct point point_substract(struct point f, struct point s){
 
 
 void snake_init(struct snake* n_snake ){
+
+    if (n_snake == NULL){
+        printf("ERROR: n_snake == NULL in snake_init");
+        return;
+    }
     struct point begin;
     begin.x = (uint16_t) MAP_WIDTH/2+1;
     begin.y =MAP_HEIGHT/2;
@@ -24,6 +29,10 @@ void snake_init(struct snake* n_snake ){
 }
 
 void generate_fruit(struct snake* n_snake){
+    if (n_snake==NULL){
+        printf("ERROR: n_snake = NULL in generate_fruit");
+        return;
+    }
     uint8_t flag =0;
     while (1)
     {
@@ -33,7 +42,6 @@ void generate_fruit(struct snake* n_snake){
         for (int i = 0; i < n_snake->lenght; i++)
         {
             if(n_snake->apple.x == n_snake->snake_array[i].x && n_snake->apple.y == n_snake->snake_array[i].y){
-                printf("search\n");
                 flag =1;
             }
         }
@@ -44,25 +52,37 @@ void generate_fruit(struct snake* n_snake){
 }
 
 void update_head_relation(struct snake* new_snake){
-   struct point head_relation =  point_substract (new_snake->snake_array[1], new_snake->snake_array[0]);
 
-   if (head_relation.x == 1 && head_relation.y ==0 ){
-       new_snake->head_orientation = LEFT;
-   }else
-   if (head_relation.x == -1 && head_relation.y ==0 ){
-        new_snake->head_orientation = RIGHT;
-   }else
-   if (head_relation.x == 0 && head_relation.y ==1 ){
-        new_snake->head_orientation = UP;
-   }else
-   if (head_relation.x == 0 && head_relation.y ==-1 ){
-        new_snake->head_orientation = DOWN;
-   }else{
-       new_snake->head_orientation = new_snake->dir;
-   }
+    if (new_snake == NULL){
+        printf("ERROR: new_sanke == NULL in update_head_relation");
+        return;
+    }
+
+    struct point head_relation =  point_substract (new_snake->snake_array[1], new_snake->snake_array[0]);
+
+    if (head_relation.x == 1 && head_relation.y ==0 ){
+        new_snake->head_orientation = LEFT;
+    }else
+    if (head_relation.x == -1 && head_relation.y ==0 ){
+            new_snake->head_orientation = RIGHT;
+    }else
+    if (head_relation.x == 0 && head_relation.y ==1 ){
+            new_snake->head_orientation = UP;
+    }else
+    if (head_relation.x == 0 && head_relation.y ==-1 ){
+            new_snake->head_orientation = DOWN;
+    }else{
+        new_snake->head_orientation = new_snake->dir;
+    }
 }
 
 void update_tail_relation(struct snake* new_snake){
+
+    if (new_snake == NULL){
+        printf("ERROR: new_sanke == NULL in update_tail_relation");
+        return;
+    }
+
     struct point head_relation =  point_substract (new_snake->snake_array[new_snake->lenght-2], new_snake->snake_array[new_snake->lenght-1]);
 
     if (head_relation.x == 1 && head_relation.y ==0 ){
@@ -88,6 +108,12 @@ void print_snake_cordes(struct snake snake){
 }
 
 void move_snake(struct snake* new_snake) {
+
+    if (new_snake == NULL){
+        printf("ERROR: new_sanke == NULL in move_sanake");
+        return;
+    }
+
     if (new_snake->dir == STOP) {
         return;
     }

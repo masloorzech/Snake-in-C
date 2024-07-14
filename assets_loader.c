@@ -4,7 +4,7 @@ BMPImage* LoadBMP24(const char* filePath) {
     FILE* file = fopen(filePath, "rb");
 
     if (!file) {
-        printf("Failed to open file %s\n", filePath);
+        printf("ERROR: Failed to open file %s\n", filePath);
         return NULL;
     }
 
@@ -12,7 +12,7 @@ BMPImage* LoadBMP24(const char* filePath) {
     fread(&fileHeader, sizeof(BMPFileHeader), 1, file);
 
     if (fileHeader.type != 0x4D42) {
-        printf("Not a BMP file: %s\n", filePath);
+        printf("ERROR: Not a BMP file: %s\n", filePath);
         fclose(file);
         return NULL;
     }
@@ -21,7 +21,7 @@ BMPImage* LoadBMP24(const char* filePath) {
     fread(&infoHeader, sizeof(BMPInfoHeader), 1, file);
 
     if (infoHeader.bits != 24) {
-        printf("Only 24-bit BMP files are supported: %s\n", filePath);
+        printf("ERROR: Only 24-bit BMP files are supported: %s\n", filePath);
         fclose(file);
         return NULL;
     }
@@ -32,7 +32,7 @@ BMPImage* LoadBMP24(const char* filePath) {
 
     BMPImage* image = (BMPImage*)malloc(sizeof(BMPImage));
     if (!image) {
-        printf("Failed to allocate memory for BMPImage\n");
+        printf("ERROR: Failed to allocate memory for BMPImage\n");
         fclose(file);
         return NULL;
     }
@@ -42,7 +42,7 @@ BMPImage* LoadBMP24(const char* filePath) {
 
     image->data = (BMPPixel**)malloc(sizeof(BMPPixel*) * infoHeader.height);
     if (!image->data) {
-        printf("Failed to allocate memory for BMPImage data\n");
+        printf("ERROR: Failed to allocate memory for BMPImage data\n");
         free(image);
         fclose(file);
         return NULL;
@@ -51,7 +51,7 @@ BMPImage* LoadBMP24(const char* filePath) {
     for (int i = 0; i < infoHeader.height; i++) {
         image->data[i] = (BMPPixel*)malloc(infoHeader.width * sizeof(BMPPixel));
         if (!image->data[i]) {
-            printf("Failed to allocate memory for BMPImage row %d\n", i);
+            printf("ERROR: Failed to allocate memory for BMPImage row %d\n", i);
             for (int j = 0; j < i; j++) {
                 free(image->data[j]);
             }
@@ -93,6 +93,10 @@ void freeFont(font* font_t) {
     }
 }
 void debugPrintBMPInTerminal(BMPImage* image){
+    if (image == NULL){
+        printf("ERROR: image == NULL in debugPrintBMPInTerminal");
+        return;
+    }
 
     for (int i = 0; i < image->infoHeader.height; i++) {
         printf("\n");
@@ -107,7 +111,12 @@ void debugPrintBMPInTerminal(BMPImage* image){
 
 }
 
-void MirrorBMPHorizontally(BMPPixel* pixelData, int width, int height) {
+
+void MirrorBMPHorizontally(BMPPixel* pixelData, unsigned int width, unsigned int height) {
+    if (pixelData == NULL){
+        printf("ERROR: pixelData == NULL in MirrorBMPHOrizontally");
+        return;
+    }
     BMPPixel temp;
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width / 2; x++) {
@@ -119,13 +128,16 @@ void MirrorBMPHorizontally(BMPPixel* pixelData, int width, int height) {
 }
 
 
-void RotateBMP180(BMPPixel* pixelData, int width, int height) {
-    BMPPixel* temp = (BMPPixel*)malloc(width * height * sizeof(BMPPixel));
-    if (!temp) {
-        printf("Failed to allocate memory for rotation\n");
+void RotateBMP180(BMPPixel* pixelData,unsigned int width, unsigned int height) {
+    if (pixelData == NULL){
+        printf("ERROR: pixelData == NULL in RotateBMP180");
         return;
     }
-
+    BMPPixel* temp = (BMPPixel*)malloc(width * height * sizeof(BMPPixel));
+    if (!temp) {
+        printf("ERROR: Failed to allocate memory for rotation\n");
+        return;
+    }
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             temp[(height - 1 - y) * width + (width - 1 - x)] = pixelData[y * width + x];
@@ -137,7 +149,10 @@ void RotateBMP180(BMPPixel* pixelData, int width, int height) {
 }
 
 void BMPConvertPixels(BMPImage * image, color primary_color, color new_color){
-
+    if (image == NULL){
+        printf("ERROR: image == NULL in BMPConvertPixels");
+        return;
+    }
     for(size_t i =0; i<image->infoHeader.height; i++){
         for(size_t j =0; j<image->infoHeader.width; j++){
             if (image->data[i][j].r == primary_color.r *255 && image->data[i][j].r == primary_color.g *255 && image->data[i][j].r == primary_color.b *255){
@@ -153,12 +168,9 @@ void BMPConvertPixels(BMPImage * image, color primary_color, color new_color){
 GLuint CreateTextureFromBMP(BMPImage* image) {
 
     if (image==NULL){
-        printf("Error. CreateTextureFromBMP with NULL arguments");
+        printf("Error: CreateTextureFromBMP with NULL arguments");
         return 1;
     }
-    /*
-    Przekształcamy tablice dwuwymairową na jedno wymiarową aby móc stowrzyć z niej teksturę i móc z niej kozystać
-    */
 
     GLuint texture;
     glGenTextures(1, &texture);
@@ -171,7 +183,7 @@ GLuint CreateTextureFromBMP(BMPImage* image) {
 
     BMPPixel* pixelData = (BMPPixel*)malloc(width * height * sizeof(BMPPixel));
     if (!pixelData) {
-        printf("Failed to allocate memory for pixel data\n");
+        printf("Error: Failed to allocate memory for pixel data\n");
         glBindTexture(GL_TEXTURE_2D, 0);
         return 0;
     }
@@ -198,19 +210,19 @@ GLuint CreateTextureFromBMP(BMPImage* image) {
 GLuint CreateTextureFromBMPSegment(BMPImage* image, int x, int y, int width, int height){
 
     if (x < 0 || x >= image->infoHeader.width) {
-        printf("Error: x coordinate out of bounds\n");
+        printf("ERROR: x coordinate out of bounds\n");
         return -1;
     }
     if (y < 0 || y >= image->infoHeader.height) {
-        printf("Error: y coordinate out of bounds\n");
+        printf("ERROR: y coordinate out of bounds\n");
         return -2;
     }
     if (x + width > image->infoHeader.width) {
-        printf("Error: segment width exceeds image width\n");
+        printf("ERROR: segment width exceeds image width\n");
         return -3;
     }
     if (y + height > image->infoHeader.height) {
-        printf("Error: segment height exceeds image height\n");
+        printf("ERROR: segment height exceeds image height\n");
         return -4;
     }
     GLuint texture;
@@ -221,7 +233,7 @@ GLuint CreateTextureFromBMPSegment(BMPImage* image, int x, int y, int width, int
 
     BMPPixel* pixelData = (BMPPixel*)malloc(width * height * sizeof(BMPPixel));
     if (!pixelData) {
-        printf("Failed to allocate memory for pixel data\n");
+        printf("ERROR: Failed to allocate memory for pixel data\n");
         glBindTexture(GL_TEXTURE_2D, 0);
         return 0;
     }
@@ -255,8 +267,12 @@ GLuint CreateTextureFromBMPSegment(BMPImage* image, int x, int y, int width, int
 
 int fontInit(font* font_n,BMPImage* image,uint16_t letter_width, uint16_t letter_height,uint16_t rows,uint16_t columns,size_t first_asci_character){
 
+    if (font_n == NULL){
+        printf("ERROR: sending NULL font_n to fontInit\n");
+        return -1;
+    }
     if (image==NULL){
-        printf("Error sending NULL image fontInit font\n");
+        printf("ERROR: sending NULL image to fontInit\n");
         return -1;
     }
 
@@ -307,14 +323,18 @@ int nearestGreaterOrEqualPowerOfTwo(int num) {
     return power;
 }
 
+/* Funcion renders orginal char from BITMAP with font, ogrinal color and orginal background */
 void renderOrginalChar(font* font_n, char c, int x, int y, font_format* font_configuration){
     RenderTexturedQuad(font_n->letters[(int)c - font_n->firstasci_character], x, y, font_configuration->width, font_configuration->height);
 }
 
 void RenderChar(font* font_n, char c, int x, int y, font_format* font_configuration) {
-    if (font_n == NULL || font_configuration == NULL){
-        printf("Sending Null font or null font_config to renderChar");
+    if (font_n == NULL){
+        printf("ERROR: font_n == NULL in font_config");
         return;
+    }
+    if (font_configuration == NULL){
+        printf("ERROR: font_configuration == NULL in font_config");
     }
 
     if (font_configuration->font_color.r == 1 && font_configuration->font_color.g == 1 && font_configuration->font_color.b == 1 &&
@@ -328,13 +348,13 @@ void RenderChar(font* font_n, char c, int x, int y, font_format* font_configurat
     GLuint originalTexture = font_n->letters[(int)c - font_n->firstasci_character];
 
     if (originalTexture == 0) {
-            printf("Invalid original texture for character %c\n", c);
+            printf("ERROR: Invalid original texture for character %c\n", c);
             return;
         }
 
     BMPPixel* pixelData = (BMPPixel*)malloc(8 * 9 *  sizeof(BMPPixel));
     if (!pixelData) {
-        printf("Failed to allocate memory for pixel data\n");
+        printf("ERROR: Failed to allocate memory for pixel data\n");
         glBindTexture(GL_TEXTURE_2D, 0);
         return;
     }
@@ -376,7 +396,12 @@ void RenderChar(font* font_n, char c, int x, int y, font_format* font_configurat
 }
 
 void RenderString(font* font_t, char* string, int x, int y, font_format* font_configuration){
-
+    if (font_t==NULL){
+        printf("ERROR: font_t == NULL in RenderString");
+    }
+    if (font_configuration == NULL){
+        printf("ERROR: font_configuration == NULL in RenderString");
+    }
     int spacing  = x;
     int index =0;
     while(string[index]!='\0'){

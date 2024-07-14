@@ -1,5 +1,8 @@
 #include <GLFW/glfw3.h>
 #include "color.h"
+
+#define MAXNUMBEROFCHARACTERINFONT 128
+
 typedef struct font_formatter_t{
     uint8_t width;
     uint8_t height;
@@ -12,5 +15,5 @@ typedef struct font_t{
     int width;
     int height;
     int firstasci_character;
-    GLuint letters[128];
+    GLuint letters[MAXNUMBEROFCHARACTERINFONT];
 }font;

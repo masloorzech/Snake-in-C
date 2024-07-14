@@ -60,8 +60,8 @@ typedef struct font_t{
 BMPImage* LoadBMP24(const char* filePath);
 void freeBMPImage(BMPImage* image);
 void freeFont(font* font_t);
-void MirrorBMPHorizontally(BMPPixel* pixelData, int width, int height);
-void RotateBMP180(BMPPixel* pixelData, int width, int height);
+void MirrorBMPHorizontally(BMPPixel* pixelData,unsigned int width,unsigned int height);
+void RotateBMP180(BMPPixel* pixelData,unsigned int width, unsigned int height);
 GLuint CreateTextureFromBMP(BMPImage* image);
 GLuint CreateTextureFromBMPSegment(BMPImage* image, int x, int y, int width, int height);
 int fontInit(font* font_n,BMPImage* image,uint16_t letter_width, uint16_t letter_height,uint16_t rows,uint16_t columns,size_t first_asci_character);
