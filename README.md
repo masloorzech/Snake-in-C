@@ -14,7 +14,7 @@ To run the game, you need to have OpenGL and GLUT installed on your machine. The
 
 ### macOS (Intel processors)
 1. Install `freeglut` via Homebrew:
-   ```bash
+```bash
    brew install freeglut
    ```
    
