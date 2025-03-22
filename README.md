@@ -25,21 +25,21 @@ To run the game, you need to have OpenGL and GLUT installed on your machine. The
 
 3. After compiling the game, run the following command to start the game:
  ```bash
-  ./snake
+   ./snake
 ```
-##Controls
+## Controls
 Up Arrow: Move the snake up.
 Down Arrow: Move the snake down.
 Left Arrow: Move the snake left.
 Right Arrow: Move the snake right.
 
-##Game Over
+## Game Over
 The game ends when the snake runs into itself. After the game over, you can restart by running the game again.
 
-##License
+## License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-##Acknowledgments
+## Acknowledgments
 This game was created using OpenGL and GLUT libraries.
 Special thanks to the open-source community for their contributions to these libraries.
 
